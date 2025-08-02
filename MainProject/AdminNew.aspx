@@ -1,17 +1,14 @@
 ﻿<%@ Page Title="Admin Dashboard" Language="C#" MasterPageFile="~/AdminMaster.Master"
     AutoEventWireup="true" CodeBehind="AdminNew.aspx.cs" Inherits="MainProject.AdminNew" %>
-
 <asp:Content ID="HeadContent" ContentPlaceHolderID="HeadContent" runat="server">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="Content/adminnew.css" />
 </asp:Content>
-
 <asp:Content ID="MainContent" ContentPlaceHolderID="MainContent" runat="server">
     <div class="admin-container">
         <div class="dashboard-header">
             <h1>Admin Dashboard</h1>
-
             <div class="stats-container">
                 <!-- Total Users Card -->
                 <div class="stat-card">
@@ -26,7 +23,6 @@
                             <asp:Label ID="lblTotalUsers" runat="server" Text="0" /></span>
                     </div>
                 </div>
-
                 <!-- Total Lessons Completed Card -->
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -40,7 +36,6 @@
                             <asp:Label ID="lblTotalLessons" runat="server" Text="0" /></span>
                     </div>
                 </div>
-
                 <!-- Top Learner Card -->
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -57,37 +52,37 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- Analytics Charts -->
         <div class="analytics-section">
             <h2>Analytics Charts</h2>
             <div class="chart-container">
                 <div class="card">
                     <h3>User Activity</h3>
-                    <canvas id="pieChart"></canvas>
+                    <canvas id="pieChart" width="400" height="300"></canvas>
                 </div>
                 <div class="card">
                     <h3>Course Completion</h3>
-                    <canvas id="completionChart"></canvas>
-                    <asp:Literal ID="LitCompletionClient" runat="server" Visible="false" />
+                    <canvas id="completionChart" width="400" height="300"></canvas>
                 </div>
                 <div class="card large-bar-chart">
                     <h3>Lesson Completions</h3>
-                    <canvas id="lessonBarChart"></canvas>
+                    <canvas id="lessonBarChart" width="600" height="400"></canvas>
                 </div>
                 <div class="card large-bar-chart">
                     <h3>Lesson Answer Accuracy</h3>
-                    <canvas id="answerBarChart"></canvas>
+                    <canvas id="answerBarChart" width="600" height="400"></canvas>
                 </div>
             </div>
         </div>
-
+        
         <!-- Hidden literals for JS charts -->
         <asp:Literal ID="litPieDataClient" runat="server" Visible="false" />
         <asp:Literal ID="litLessonLabelsClient" runat="server" Visible="false" />
         <asp:Literal ID="litLessonViewsClient" runat="server" Visible="false" />
         <asp:Literal ID="litCorrectIncorrectClient" runat="server" Visible="false" />
-
+        <asp:Literal ID="LitCompletionClient" runat="server" Visible="true" />
+        
         <!-- User Progress Table -->
         <div class="card">
             <h2>Recently Completed</h2>
@@ -97,7 +92,7 @@
                 HeaderStyle-CssClass="grid-header"
                 RowStyle-CssClass="grid-row" />
         </div>
-
+        
         <!-- Lesson Completion Stats Table -->
         <div class="card">
             <h2>Lesson Completion Stats</h2>
@@ -107,119 +102,132 @@
                 HeaderStyle-CssClass="grid-header"
                 RowStyle-CssClass="grid-row" />
         </div>
-
     </div>
 
-    <script>
-        console.log('Pie Data:', [<%= litPieDataClient.Text %>]);
-        console.log('Bar Labels:', [<%= litLessonLabelsClient.Text %>]);
-        console.log('Bar Data:', [<%= litLessonViewsClient.Text %>]);
-        console.log('Completion Data:', document.getElementById('<%= LitCompletionClient.ClientID %>')?.textContent);
+    <script type="text/javascript">
+        // Chart.js Configuration
+        Chart.defaults.color = '#ffffff';
+        Chart.defaults.borderColor = '#444444';
+        Chart.defaults.backgroundColor = 'transparent';
 
-        function toggleFullscreen(el) {
-            el.classList.toggle("fullscreen");
+        // Wait for page to load
+        document.addEventListener('DOMContentLoaded', function () {
+            drawCharts();
+        });
+
+        function drawCharts() {
+            drawPieChart();
+            drawCompletionChart();
+            drawLessonBarChart();
+            drawAnswerAccuracyChart();
         }
 
-        window.onload = function () {
-            const pieData = [<%= litPieDataClient.Text %>];
-            const barLabels = [<%= litLessonLabelsClient.Text %>];
-            const barData = [<%= litLessonViewsClient.Text %>];
-            const correctData = [<%= litCorrectIncorrectClient.Text %>];
+        function drawPieChart() {
+            try {
+                const pieDataText = '<%= litPieDataClient.Text %>';
+                console.log('Pie data:', pieDataText);
 
-            // Pie Chart - User Activity
-            new Chart(document.getElementById('pieChart'), {
-                type: 'pie',
-                data: {
-                    labels: ['Active Users', 'Inactive Users'],
-                    datasets: [{
-                        data: pieData,
-                        backgroundColor: ['#FFD700', '#EEA400']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#eee',
-                                font: {
-                                    family: 'Poppins'
+                if (pieDataText && pieDataText.trim() !== '') {
+                    const pieData = pieDataText.split(',').map(item => parseInt(item.trim()));
+
+                    if (pieData.length >= 2 && !isNaN(pieData[0]) && !isNaN(pieData[1])) {
+                        const ctx = document.getElementById('pieChart').getContext('2d');
+                        new Chart(ctx, {
+                            type: 'pie',
+                            data: {
+                                labels: ['Active Users', 'Inactive Users'],
+                                datasets: [{
+                                    data: pieData,
+                                    backgroundColor: ['#FFD700', '#EEA400'],
+                                    borderWidth: 2,
+                                    borderColor: '#333'
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            color: '#ffffff',
+                                            font: {
+                                                family: 'Poppins',
+                                                size: 12
+                                            }
+                                        }
+                                    }
                                 }
                             }
-                        }
+                        });
                     }
                 }
-            });
+            } catch (e) {
+                console.error('Error drawing pie chart:', e);
+            }
+        }
 
-            // Bar Chart - Lesson Views
-            new Chart(document.getElementById('lessonBarChart'), {
-                type: 'bar',
-                data: {
-                    labels: barLabels,
-                    datasets: [{
-                        label: 'Views',
-                        data: barData,
-                        backgroundColor: '#FFD700'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: '#fff',
-                                font: {
-                                    family: 'Poppins'
-                                }
-                            },
-                            grid: {
-                                color: '#444'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: '#fff',
-                                font: {
-                                    family: 'Poppins'
-                                }
-                            },
-                            grid: {
-                                display: false
-                            }
+        function drawCompletionChart() {
+            try {
+                const completionDataText = '<%= LitCompletionClient.Text %>';
+                console.log('Completion data:', completionDataText);
+
+                if (completionDataText && completionDataText.trim() !== '') {
+                    const completionData = completionDataText.split(',').map(item => parseInt(item.trim()));
+
+                    if (completionData.length >= 2 && !isNaN(completionData[0]) && !isNaN(completionData[1])) {
+                        // If both values are 0, show a default message chart
+                        if (completionData[0] === 0 && completionData[1] === 0) {
+                            completionData[0] = 1; // Show a small slice for "No data"
+                            var labels = ['No completion data available'];
+                            var colors = ['#666666'];
+                        } else {
+                            var labels = ['Completed All Courses', 'Completed Some Courses'];
+                            var colors = ['#FFD700', '#8b0000'];
                         }
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#fff',
-                                font: {
-                                    family: 'Poppins'
+
+                        const ctx = document.getElementById('completionChart').getContext('2d');
+                        new Chart(ctx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    data: completionData,
+                                    backgroundColor: colors,
+                                    borderWidth: 2,
+                                    borderColor: '#333'
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            color: '#ffffff',
+                                            font: {
+                                                family: 'Poppins',
+                                                size: 12
+                                            }
+                                        }
+                                    }
                                 }
                             }
-                        }
+                        });
                     }
-                }
-            });
-
-            // Course Completion Chart - Fixed version
-            const completionDataElement = document.getElementById('<%= LitCompletionClient.ClientID %>');
-            if (completionDataElement && completionDataElement.textContent) {
-                const completionData = completionDataElement.textContent.split(',').map(item => parseInt(item.trim()));
-
-                // Check if we have valid data
-                if (completionData.length === 2 && !isNaN(completionData[0]) && !isNaN(completionData[1])) {
-                    new Chart(document.getElementById('completionChart'), {
+                } else {
+                    // If no data at all, create a placeholder chart
+                    const ctx = document.getElementById('completionChart').getContext('2d');
+                    new Chart(ctx, {
                         type: 'doughnut',
                         data: {
-                            labels: ['Completed All Courses', 'Completed Some Courses'],
+                            labels: ['No data available'],
                             datasets: [{
-                                data: completionData,
-                                backgroundColor: ['#FFD700', '#8b0000'],
-                                borderColor: '#1a1a1a',
-                                borderWidth: 2
+                                data: [1],
+                                backgroundColor: ['#666666'],
+                                borderWidth: 2,
+                                borderColor: '#333'
                             }]
                         },
                         options: {
@@ -229,32 +237,239 @@
                                 legend: {
                                     position: 'bottom',
                                     labels: {
-                                        color: '#fff',
+                                        color: '#ffffff',
                                         font: {
-                                            family: 'Poppins'
-                                        }
-                                    }
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function (context) {
-                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                            const value = context.raw;
-                                            const percentage = Math.round((value / total) * 100);
-                                            return `${context.label}: ${value} (${percentage}%)`;
+                                            family: 'Poppins',
+                                            size: 12
                                         }
                                     }
                                 }
-                            },
-                            cutout: '70%'
+                            }
                         }
                     });
-                } else {
-                    console.error('Invalid completion data format');
                 }
-            } else {
-                console.error('Completion data element not found or empty');
+            } catch (e) {
+                console.error('Error drawing completion chart:', e);
+                // Create an error chart as fallback
+                const ctx = document.getElementById('completionChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Chart Error'],
+                        datasets: [{
+                            data: [1],
+                            backgroundColor: ['#ff4444'],
+                            borderWidth: 2,
+                            borderColor: '#333'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#ffffff',
+                                    font: {
+                                        family: 'Poppins',
+                                        size: 12
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
             }
-        };
+        }
+
+        function drawLessonBarChart() {
+            try {
+                const labelsText = '<%= litLessonLabelsClient.Text %>';
+                const viewsText = '<%= litLessonViewsClient.Text %>';
+                
+                console.log('Lesson labels:', labelsText);
+                console.log('Lesson views:', viewsText);
+                
+                if (labelsText && viewsText && labelsText.trim() !== '' && viewsText.trim() !== '') {
+                    // Parse labels - handle quoted strings properly
+                    const labels = [];
+                    if (labelsText.includes('"')) {
+                        const labelMatches = labelsText.match(/"([^"]*)"/g);
+                        if (labelMatches) {
+                            for (let i = 0; i < labelMatches.length; i++) {
+                                labels.push(labelMatches[i].replace(/"/g, ''));
+                            }
+                        }
+                    } else {
+                        labels = labelsText.split(',').map(item => item.trim());
+                    }
+                    
+                    const views = viewsText.split(',').map(item => parseInt(item.trim()) || 0);
+                    
+                    if (labels.length > 0 && views.length > 0) {
+                        const ctx = document.getElementById('lessonBarChart').getContext('2d');
+                        new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Completions',
+                                    data: views,
+                                    backgroundColor: '#FFD700',
+                                    borderColor: '#EEA400',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            color: '#ffffff',
+                                            font: {
+                                                family: 'Poppins',
+                                                size: 12
+                                            }
+                                        },
+                                        grid: {
+                                            color: '#444444'
+                                        }
+                                    },
+                                    x: {
+                                        ticks: {
+                                            color: '#ffffff',
+                                            font: {
+                                                family: 'Poppins',
+                                                size: 10
+                                            },
+                                            maxRotation: 45
+                                        },
+                                        grid: {
+                                            color: '#444444'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error('Error drawing lesson bar chart:', e);
+            }
+        }
+
+        function drawAnswerAccuracyChart() {
+            try {
+                const accuracyData = '<%= litCorrectIncorrectClient.Text %>';
+                console.log('Accuracy data:', accuracyData);
+
+                if (accuracyData && accuracyData.trim() !== '') {
+                    const parts = accuracyData.split(';');
+                    if (parts.length >= 3) {
+                        const correctAnswers = parts[0].split(',').map(item => parseInt(item.trim()) || 0);
+                        const incorrectAnswers = parts[1].split(',').map(item => parseInt(item.trim()) || 0);
+
+                        // Parse labels - handle quoted strings properly
+                        const labels = [];
+                        if (parts[2].includes('"')) {
+                            const labelMatches = parts[2].match(/"([^"]*)"/g);
+                            if (labelMatches) {
+                                for (let i = 0; i < labelMatches.length; i++) {
+                                    labels.push(labelMatches[i].replace(/"/g, ''));
+                                }
+                            }
+                        } else {
+                            labels = parts[2].split(',').map(item => item.trim());
+                        }
+
+                        if (labels.length > 0) {
+                            const ctx = document.getElementById('answerBarChart').getContext('2d');
+                            new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'High Scores (≥80)',
+                                        data: correctAnswers,
+                                        backgroundColor: '#4CAF50',
+                                        borderColor: '#45a049',
+                                        borderWidth: 1
+                                    }, {
+                                        label: 'Low Scores (<80)',
+                                        data: incorrectAnswers,
+                                        backgroundColor: '#f44336',
+                                        borderColor: '#da190b',
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                            labels: {
+                                                color: '#ffffff',
+                                                font: {
+                                                    family: 'Poppins',
+                                                    size: 12
+                                                }
+                                            }
+                                        }
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            stacked: true,
+                                            ticks: {
+                                                color: '#ffffff',
+                                                font: {
+                                                    family: 'Poppins',
+                                                    size: 12
+                                                }
+                                            },
+                                            grid: {
+                                                color: '#444444'
+                                            }
+                                        },
+                                        x: {
+                                            stacked: true,
+                                            ticks: {
+                                                color: '#ffffff',
+                                                font: {
+                                                    family: 'Poppins',
+                                                    size: 10
+                                                },
+                                                maxRotation: 45
+                                            },
+                                            grid: {
+                                                color: '#444444'
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Error drawing answer accuracy chart:', e);
+            }
+        }
+
+        // Make charts responsive on window resize
+        window.addEventListener('resize', function () {
+            Chart.helpers.each(Chart.instances, function (instance) {
+                instance.resize();
+            });
+        });
     </script>
 </asp:Content>
