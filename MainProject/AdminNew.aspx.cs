@@ -102,7 +102,7 @@ namespace MainProject
             {
                 con.Open();
                 var cmd = new SqlCommand(@"
-                    SELECT l.Title, COUNT(p.Id) AS Views
+                    SELECT l.Title, COUNT(p.Id) AS Completions
                     FROM lessonTable l
                     LEFT JOIN userProgress p ON l.LessonId = p.LessonId
                     GROUP BY l.Title", con);
@@ -110,7 +110,7 @@ namespace MainProject
                 while (reader.Read())
                 {
                     labels.Append($"'{reader["Title"]}',");
-                    views.Append(reader["Views"] + ",");
+                    views.Append(reader["Completions"] + ",");
                 }
             }
 

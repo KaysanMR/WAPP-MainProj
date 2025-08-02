@@ -24,6 +24,24 @@ namespace MainProject
         protected global::System.Web.UI.WebControls.Label lblTotalUsers;
 
         /// <summary>
+        /// lblTotalLessons control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblTotalLessons;
+
+        /// <summary>
+        /// lblTopLearner control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblTopLearner;
+
+        /// <summary>
         /// litPieDataClient control.
         /// </summary>
         /// <remarks>
