@@ -48,7 +48,7 @@
 
         <!-- User Progress Table -->
         <div class="card">
-            <h2>User Progress</h2>
+            <h2>Recently Completed</h2>
             <asp:GridView ID="GridViewProgress" runat="server" AutoGenerateColumns="true"
                 CssClass="admin-grid"
                 GridLines="None"
