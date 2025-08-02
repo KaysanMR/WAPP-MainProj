@@ -146,6 +146,11 @@
                             options: {
                                 responsive: true,
                                 maintainAspectRatio: false,
+                                layout: {
+                                    padding: {
+                                        bottom: 20
+                                    }
+                                },
                                 plugins: {
                                     legend: {
                                         position: 'bottom',
@@ -153,8 +158,11 @@
                                             color: '#ffffff',
                                             font: {
                                                 family: 'Poppins',
-                                                size: 12
-                                            }
+                                                size: 11
+                                            },
+                                            padding: 15,
+                                            usePointStyle: true,
+                                            boxWidth: 12
                                         }
                                     }
                                 }
@@ -182,7 +190,7 @@
                             var labels = ['No completion data available'];
                             var colors = ['#666666'];
                         } else {
-                            var labels = ['Completed All Courses', 'Completed Some Courses'];
+                            var labels = ['All Courses', 'Some Courses']; // Shortened labels
                             var colors = ['#FFD700', '#8b0000'];
                         }
 
@@ -201,6 +209,11 @@
                             options: {
                                 responsive: true,
                                 maintainAspectRatio: false,
+                                layout: {
+                                    padding: {
+                                        bottom: 20
+                                    }
+                                },
                                 plugins: {
                                     legend: {
                                         position: 'bottom',
@@ -208,8 +221,11 @@
                                             color: '#ffffff',
                                             font: {
                                                 family: 'Poppins',
-                                                size: 12
-                                            }
+                                                size: 11
+                                            },
+                                            padding: 15,
+                                            usePointStyle: true,
+                                            boxWidth: 12
                                         }
                                     }
                                 }
@@ -240,7 +256,7 @@
                                         color: '#ffffff',
                                         font: {
                                             family: 'Poppins',
-                                            size: 12
+                                            size: 11
                                         }
                                     }
                                 }
@@ -273,7 +289,7 @@
                                     color: '#ffffff',
                                     font: {
                                         family: 'Poppins',
-                                        size: 12
+                                        size: 11
                                     }
                                 }
                             }

@@ -209,7 +209,6 @@
     </Compile>
     <Compile Include="AdminNew.aspx.cs">
       <DependentUpon>AdminNew.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="AdminNew.aspx.designer.cs">
       <DependentUpon>AdminNew.aspx</DependentUpon>
