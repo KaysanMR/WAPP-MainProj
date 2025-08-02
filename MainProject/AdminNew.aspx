@@ -111,6 +111,11 @@
     </div>
 
     <script>
+        console.log('Pie Data:', [<%= litPieDataClient.Text %>]);
+        console.log('Bar Labels:', [<%= litLessonLabelsClient.Text %>]);
+        console.log('Bar Data:', [<%= litLessonViewsClient.Text %>]);
+        console.log('Completion Data:', document.getElementById('<%= LitCompletionClient.ClientID %>')?.textContent);
+
         function toggleFullscreen(el) {
             el.classList.toggle("fullscreen");
         }
@@ -128,7 +133,7 @@
                     labels: ['Active Users', 'Inactive Users'],
                     datasets: [{
                         data: pieData,
-                        backgroundColor: ['#FFD700', '#555']
+                        backgroundColor: ['#FFD700', '#EEA400']
                     }]
                 },
                 options: {
@@ -137,7 +142,7 @@
                         legend: {
                             position: 'bottom',
                             labels: {
-                                color: '#fff',
+                                color: '#eee',
                                 font: {
                                     family: 'Poppins'
                                 }
@@ -201,49 +206,54 @@
 
             // Course Completion Chart - Fixed version
             const completionDataElement = document.getElementById('<%= LitCompletionClient.ClientID %>');
-            if (completionDataElement) {
-                const completionData = completionDataElement.textContent.split(',').map(Number);
+            if (completionDataElement && completionDataElement.textContent) {
+                const completionData = completionDataElement.textContent.split(',').map(item => parseInt(item.trim()));
 
-                new Chart(document.getElementById('completionChart'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Completed All Courses', 'Completed Some Courses'],
-                        datasets: [{
-                            data: completionData,
-                            backgroundColor: ['#FFD700', '#8b0000'],
-                            borderColor: '#1a1a1a',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    color: '#fff',
-                                    font: {
-                                        family: 'Poppins'
+                // Check if we have valid data
+                if (completionData.length === 2 && !isNaN(completionData[0]) && !isNaN(completionData[1])) {
+                    new Chart(document.getElementById('completionChart'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Completed All Courses', 'Completed Some Courses'],
+                            datasets: [{
+                                data: completionData,
+                                backgroundColor: ['#FFD700', '#8b0000'],
+                                borderColor: '#1a1a1a',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        color: '#fff',
+                                        font: {
+                                            family: 'Poppins'
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const value = context.raw;
+                                            const percentage = Math.round((value / total) * 100);
+                                            return `${context.label}: ${value} (${percentage}%)`;
+                                        }
                                     }
                                 }
                             },
-                            tooltip: {
-                                callbacks: {
-                                    label: function (context) {
-                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                        const value = context.raw;
-                                        const percentage = Math.round((value / total) * 100);
-                                        return `${context.label}: ${value} (${percentage}%)`;
-                                    }
-                                }
-                            }
-                        },
-                        cutout: '70%'
-                    }
-                });
+                            cutout: '70%'
+                        }
+                    });
+                } else {
+                    console.error('Invalid completion data format');
+                }
             } else {
-                console.error('Completion data element not found');
+                console.error('Completion data element not found or empty');
             }
         };
     </script>

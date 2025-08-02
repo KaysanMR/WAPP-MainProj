@@ -103,10 +103,11 @@ namespace MainProject
             {
                 con.Open();
                 var cmd = new SqlCommand(@"
-                    SELECT l.Title, COUNT(p.Id) AS Completions
+                    SELECT TOP 10 l.Title, COUNT(p.Id) AS Completions
                     FROM lessonTable l
                     LEFT JOIN userProgress p ON l.LessonId = p.LessonId
-                    GROUP BY l.Title", con);
+                    GROUP BY l.Title
+                    ORDER BY COUNT(p.Id) DESC", con);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
@@ -119,12 +120,10 @@ namespace MainProject
             litLessonViewsClient.Text = views.ToString().TrimEnd(',');
         }
 
-        protected Literal LitCompletionClient;
-
         private void LoadCompletionStats()
         {
             int totalCourses = 10;
-            int completedAll = 25, completedSome = 75;
+            int completedAll = 0, completedSome = 0;
 
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString))
             {
@@ -158,7 +157,9 @@ namespace MainProject
                 }
             }
 
-            LitCompletionClient.Text = $"{completedAll},{completedSome}";
+            // Ensure we always have valid numbers
+            LitCompletionClient.Text = $"{Math.Max(0, completedAll)},{Math.Max(0, completedSome)}";
+            LitCompletionClient.Visible = true;
         }
     }
 }
