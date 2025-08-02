@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Markdig; // Add this namespace for Markdown conversion
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Web.UI.WebControls;
 
-namespace WebApplication1
+namespace MainProject
 {
-    public partial class lesson : System.Web.UI.Page
+    public partial class LessonDetail : System.Web.UI.Page
     {
         int lessonId;
 
@@ -29,16 +30,36 @@ namespace WebApplication1
             {
                 con.Open();
 
-                SqlCommand cmd1 = new SqlCommand("SELECT Title, VideoUrl FROM lessonTable WHERE LessonId=@id", con);
-                cmd1.Parameters.AddWithValue("@id", lessonId);
-                SqlDataReader reader1 = cmd1.ExecuteReader();
-                if (reader1.Read())
-                {
-                    lblTitle.Text = reader1["Title"].ToString();
-                    lessonVideo.Src = reader1["VideoUrl"].ToString();
-                }
-                reader1.Close();
+                SqlCommand cmdArticle = new SqlCommand(
+                    "SELECT Title, Content, Author, LastUpdated FROM lessonArticles WHERE LessonId=@id",
+                    con);
+                cmdArticle.Parameters.AddWithValue("@id", lessonId);
+                SqlDataReader articleReader = cmdArticle.ExecuteReader();
 
+                if (articleReader.Read())
+                {
+                    articleSection.Visible = true;
+                    lblArticleTitle.Text = articleReader["Title"].ToString();
+                    lblAuthor.Text = articleReader["Author"].ToString();
+
+                    DateTime updated = Convert.ToDateTime(articleReader["LastUpdated"]);
+                    lblLastUpdated.Text = updated.ToString("MMMM dd, yyyy");
+
+                    string markdownContent = articleReader["Content"].ToString();
+
+                    // Convert markdown to HTML (basic conversion)
+                    var pipeline = new MarkdownPipelineBuilder()
+                        .UseAdvancedExtensions()
+                        .UseSoftlineBreakAsHardlineBreak()
+                        .Build();
+
+                    string htmlContent = Markdig.Markdown.ToHtml(markdownContent, pipeline);
+
+                    articleContent.InnerHtml = htmlContent;
+                }
+                articleReader.Close();
+
+                // Load questions
                 SqlCommand cmd2 = new SqlCommand("SELECT TOP 3 * FROM lessonQuestions WHERE LessonId=@id", con);
                 cmd2.Parameters.AddWithValue("@id", lessonId);
                 SqlDataReader reader2 = cmd2.ExecuteReader();
@@ -85,9 +106,9 @@ namespace WebApplication1
         {
             int score = 0;
             List<string> userAnswers = new List<string> {
-                rblQ1.SelectedValue.Trim(),
-                rblQ2.SelectedValue.Trim(),
-                rblQ3.SelectedValue.Trim()
+                rblQ1.SelectedValue?.Trim() ?? "",
+                rblQ2.SelectedValue?.Trim() ?? "",
+                rblQ3.SelectedValue?.Trim() ?? ""
             };
 
             List<string> correctAnswers = new List<string>();
@@ -122,11 +143,11 @@ namespace WebApplication1
 
             lblFeedback.Text = $"You got {score}/3 correct.";
 
-            SaveProgress(score); // сохранить даже если не 3
+            SaveProgress(score);
 
             if (score == 3)
             {
-                Response.AddHeader("REFRESH", "2;URL=lesson.aspx?id=" + (lessonId + 1));
+                Response.AddHeader("REFRESH", $"2;URL=LessonDetail.aspx?id={lessonId + 1}");
             }
             else
             {
@@ -137,6 +158,8 @@ namespace WebApplication1
         private void SaveProgress(int score)
         {
             int userId = GetUserId();
+            if (userId == -1) return;
+
             string connStr = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
 
             using (SqlConnection con = new SqlConnection(connStr))
@@ -171,6 +194,9 @@ namespace WebApplication1
         private void SaveAnswer(int lessonId, string question, string selected, string correct)
         {
             bool isCorrect = (selected.Trim().ToLower() == correct.Trim().ToLower());
+            int userId = GetUserId();
+            if (userId == -1) return;
+
             string connStr = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
 
             using (SqlConnection con = new SqlConnection(connStr))
@@ -179,7 +205,7 @@ namespace WebApplication1
                 SqlCommand cmd = new SqlCommand(
                     "INSERT INTO userAnswers (UserId, LessonId, QuestionText, SelectedAnswer, CorrectAnswer, IsCorrect) " +
                     "VALUES (@uid, @lid, @q, @sel, @corr, @iscorrect)", con);
-                cmd.Parameters.AddWithValue("@uid", GetUserId());
+                cmd.Parameters.AddWithValue("@uid", userId);
                 cmd.Parameters.AddWithValue("@lid", lessonId);
                 cmd.Parameters.AddWithValue("@q", question);
                 cmd.Parameters.AddWithValue("@sel", selected);
@@ -191,8 +217,11 @@ namespace WebApplication1
 
         private int GetUserId()
         {
-            string username = Session["username"].ToString().Trim(); // trim to be safe
+            if (Session["username"] == null) return -1;
+
+            string username = Session["username"].ToString().Trim();
             string connStr = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
+
             using (SqlConnection con = new SqlConnection(connStr))
             {
                 SqlCommand cmd = new SqlCommand("SELECT Id FROM userTable WHERE username=@user", con);
@@ -200,36 +229,25 @@ namespace WebApplication1
                 con.Open();
 
                 object result = cmd.ExecuteScalar();
-                if (result == null)
-                {
-                    lblFeedback.Text += $" [User '{username}' not found in userTable]";
-                    return -1; // not found
-                }
-
-                return (int)result;
+                return result != null ? (int)result : -1;
             }
         }
-
 
         protected void btnPrev_Click(object sender, EventArgs e)
         {
             int prev = lessonId - 1;
-            if (prev >= 1)
-                Response.Redirect("lesson.aspx?id=" + prev);
+            Response.Redirect($"LessonDetail.aspx?id={(prev >= 1 ? prev : 1)}");
         }
 
         protected void btnNext_Click(object sender, EventArgs e)
         {
             int next = lessonId + 1;
-            if (next <= 10)
-                Response.Redirect("lesson.aspx?id=" + next);
-            else
-                lblFeedback.Text = "You've completed all lessons! 🎉";
+            Response.Redirect($"LessonDetail.aspx?id={next}");
         }
 
         protected void btnHome_Click(object sender, EventArgs e)
         {
-            Response.Redirect("MainPage.aspx");
+            Response.Redirect("Lessons.aspx");
         }
     }
 }

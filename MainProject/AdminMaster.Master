@@ -1,4 +1,4 @@
-﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.Master.cs" Inherits="MainProject.SiteMaster" %>
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="AdminMaster.master.cs" Inherits="MainProject.AdminMaster" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,35 +7,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><asp:ContentPlaceHolder ID="TitleContent" runat="server"></asp:ContentPlaceHolder></title>
     <link rel="stylesheet" href="Content/styles.css" />
+    <link rel="stylesheet" href="Content/admin.css" />
     <asp:ContentPlaceHolder ID="HeadContent" runat="server"></asp:ContentPlaceHolder>
 </head>
 
-<body>
+<body class="admin">
     <form id="form1" runat="server">
-        <header class="main-header">
+        <header class="admin-header">
             <div class="container">
                 <nav>
-                    <img src="img/logo.png" class="logo" alt="NetSmart Logo" />
+                    <img src="img/logo.png" class="logo" alt="NetSmart Admin" />
                     <span class="menu-icon" onclick="toggleMenu()">☰</span>
                     <ul id="navLinks" runat="server">
-                        <li><a href="MainPage.aspx">Home</a></li>
-                        <li><a href="Lessons.aspx">Lessons</a></li>
-                        <li><a href="AboutUs.aspx">About</a></li>
-                        <asp:PlaceHolder ID="phNotLoggedIn" runat="server">
-                            <li><a href="Login.aspx">Login</a></li>
-                        </asp:PlaceHolder>
-                        <asp:PlaceHolder ID="phLoggedIn" runat="server" Visible="false">
-                            <li class="user-icon">
-                                <div class="user-initials" id="userInitials" runat="server"></div>
-                                <asp:LinkButton ID="btnLogout" runat="server" OnClick="btnLogout_Click">Logout</asp:LinkButton>
-                            </li>
-                        </asp:PlaceHolder>
+                        <li><a href="AdminDashboard.aspx">Dashboard</a></li>
+                        <li class="user-icon">
+                            <div class="user-initials" id="userInitials" runat="server"></div>
+                            <asp:LinkButton ID="btnLogout" runat="server" OnClick="btnLogout_Click">Logout</asp:LinkButton>
+                        </li>
                     </ul>
                 </nav>
             </div>
         </header>
 
-        <main>
+        <main class="admin-main">
             <asp:ContentPlaceHolder ID="MainContent" runat="server"></asp:ContentPlaceHolder>
         </main>
     </form>

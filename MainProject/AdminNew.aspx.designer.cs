@@ -24,22 +24,22 @@ namespace MainProject
         protected global::System.Web.UI.WebControls.Label lblTotalUsers;
 
         /// <summary>
-        /// GridViewProgress control.
+        /// lblTotalLessons control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView GridViewProgress;
+        protected global::System.Web.UI.WebControls.Label lblTotalLessons;
 
         /// <summary>
-        /// GridViewLessonStats control.
+        /// lblTopLearner control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView GridViewLessonStats;
+        protected global::System.Web.UI.WebControls.Label lblTopLearner;
 
         /// <summary>
         /// litPieDataClient control.
@@ -76,5 +76,32 @@ namespace MainProject
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litCorrectIncorrectClient;
+
+        /// <summary>
+        /// LitCompletionClient control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal LitCompletionClient;
+
+        /// <summary>
+        /// GridViewProgress control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView GridViewProgress;
+
+        /// <summary>
+        /// GridViewLessonStats control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView GridViewLessonStats;
     }
 }

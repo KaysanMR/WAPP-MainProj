@@ -1,13 +1,22 @@
 ﻿using System;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Web.UI;
+using System.Web.UI.WebControls;
 
-namespace WebApplication1
+namespace MainProject
 {
-    public partial class Login : System.Web.UI.Page
+    public partial class Login : Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            // Hide navigation elements for login page
+            var phLoggedIn = Master.FindControl("phLoggedIn") as PlaceHolder;
+            var phNotLoggedIn = Master.FindControl("phNotLoggedIn") as PlaceHolder;
+
+            if (phLoggedIn != null) phLoggedIn.Visible = false;
+            if (phNotLoggedIn != null) phNotLoggedIn.Visible = false;
+
             // Clear session on load
             Session.Clear();
         }
