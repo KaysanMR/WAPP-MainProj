@@ -24,24 +24,6 @@ namespace MainProject
         protected global::System.Web.UI.WebControls.Label lblTotalUsers;
 
         /// <summary>
-        /// GridViewProgress control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView GridViewProgress;
-
-        /// <summary>
-        /// GridViewLessonStats control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView GridViewLessonStats;
-
-        /// <summary>
         /// litPieDataClient control.
         /// </summary>
         /// <remarks>
@@ -76,5 +58,23 @@ namespace MainProject
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litCorrectIncorrectClient;
+
+        /// <summary>
+        /// GridViewProgress control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView GridViewProgress;
+
+        /// <summary>
+        /// GridViewLessonStats control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView GridViewLessonStats;
     }
 }

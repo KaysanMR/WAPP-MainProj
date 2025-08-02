@@ -17,6 +17,35 @@
             </div>
         </div>
 
+        <!-- Analytics Charts -->
+        <div class="analytics-section">
+            <h2>Analytics Charts</h2>
+            <div class="chart-container">
+                <div class="chart-card">
+                    <h3>User Activity</h3>
+                    <canvas id="pieChart"></canvas>
+                </div>
+                <div class="chart-card large-bar-chart">
+                    <h3>Lesson Views</h3>
+                    <canvas id="lessonBarChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Answer Accuracy</h3>
+                    <canvas id="correctChart"></canvas>
+                </div>
+                <div class="chart-card large-bar-chart">
+                    <h3>Lesson Views</h3>
+                    <canvas id="lessonBarChart1"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden literals for JS charts -->
+        <asp:Literal ID="litPieDataClient" runat="server" Visible="false" />
+        <asp:Literal ID="litLessonLabelsClient" runat="server" Visible="false" />
+        <asp:Literal ID="litLessonViewsClient" runat="server" Visible="false" />
+        <asp:Literal ID="litCorrectIncorrectClient" runat="server" Visible="false" />
+
         <!-- User Progress Table -->
         <div class="card">
             <h2>User Progress</h2>
@@ -37,30 +66,6 @@
                 RowStyle-CssClass="grid-row" />
         </div>
 
-        <!-- Analytics Charts -->
-        <div class="analytics-section">
-            <h2>Analytics Charts</h2>
-            <div class="chart-container">
-                <div class="chart-card" onclick="toggleFullscreen(this)">
-                    <h3>User Activity</h3>
-                    <canvas id="pieChart"></canvas>
-                </div>
-                <div class="chart-card large-bar-chart" onclick="toggleFullscreen(this)">
-                    <h3>Lesson Views</h3>
-                    <canvas id="lessonBarChart"></canvas>
-                </div>
-                <div class="chart-card" onclick="toggleFullscreen(this)">
-                    <h3>Answer Accuracy</h3>
-                    <canvas id="correctChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Hidden literals for JS charts -->
-        <asp:Literal ID="litPieDataClient" runat="server" Visible="false" />
-        <asp:Literal ID="litLessonLabelsClient" runat="server" Visible="false" />
-        <asp:Literal ID="litLessonViewsClient" runat="server" Visible="false" />
-        <asp:Literal ID="litCorrectIncorrectClient" runat="server" Visible="false" />
     </div>
 
     <script>
