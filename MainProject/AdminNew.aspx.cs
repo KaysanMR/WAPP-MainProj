@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using System.Web.UI.WebControls;
 
 namespace MainProject
 {
@@ -23,7 +24,7 @@ namespace MainProject
                 LoadLessonStats();
                 LoadUserActivity();
                 LoadLessonViews();
-                LoadAnswerStats();
+                LoadCompletionStats();
             }
         }
 
@@ -118,18 +119,46 @@ namespace MainProject
             litLessonViewsClient.Text = views.ToString().TrimEnd(',');
         }
 
-        private void LoadAnswerStats()
+        protected Literal LitCompletionClient;
+
+        private void LoadCompletionStats()
         {
-            int correct = 0, incorrect = 0;
+            int totalCourses = 10;
+            int completedAll = 25, completedSome = 75;
 
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString))
             {
                 con.Open();
-                correct = Convert.ToInt32(new SqlCommand("SELECT COUNT(*) FROM userAnswers WHERE IsCorrect=1", con).ExecuteScalar());
-                incorrect = Convert.ToInt32(new SqlCommand("SELECT COUNT(*) FROM userAnswers WHERE IsCorrect=0", con).ExecuteScalar());
+
+                string sql = @"
+                WITH UserCompletion AS (
+                    SELECT 
+                        UserId, 
+                        COUNT(DISTINCT LessonId) AS CompletedCount
+                    FROM userProgress
+                    WHERE Completed = 1
+                    GROUP BY UserId
+                    HAVING COUNT(DISTINCT LessonId) > 0
+                )
+                SELECT 
+                    SUM(CASE WHEN CompletedCount = @totalCourses THEN 1 ELSE 0 END) AS CompletedAll,
+                    SUM(CASE WHEN CompletedCount < @totalCourses THEN 1 ELSE 0 END) AS CompletedSome
+                FROM UserCompletion";
+
+                SqlCommand cmd = new SqlCommand(sql, con);
+                cmd.Parameters.AddWithValue("@totalCourses", totalCourses);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        completedAll = reader["CompletedAll"] != DBNull.Value ? Convert.ToInt32(reader["CompletedAll"]) : 0;
+                        completedSome = reader["CompletedSome"] != DBNull.Value ? Convert.ToInt32(reader["CompletedSome"]) : 0;
+                    }
+                }
             }
 
-            litCorrectIncorrectClient.Text = $"{correct},{incorrect}";
+            LitCompletionClient.Text = $"{completedAll},{completedSome}";
         }
     }
 }

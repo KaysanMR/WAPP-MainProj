@@ -67,8 +67,9 @@
                     <canvas id="pieChart"></canvas>
                 </div>
                 <div class="card">
-                    <h3>Answer Accuracy</h3>
-                    <canvas id="correctChart"></canvas>
+                    <h3>Course Completion</h3>
+                    <canvas id="completionChart"></canvas>
+                    <asp:Literal ID="LitCompletionClient" runat="server" Visible="false" />
                 </div>
                 <div class="card large-bar-chart">
                     <h3>Lesson Completions</h3>
@@ -198,31 +199,52 @@
                 }
             });
 
-            // Doughnut Chart - Answer Accuracy
-            new Chart(document.getElementById('correctChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Correct', 'Incorrect'],
-                    datasets: [{
-                        data: correctData,
-                        backgroundColor: ['#FFD700', '#8b0000']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#fff',
-                                font: {
-                                    family: 'Poppins'
+            // Course Completion Chart - Fixed version
+            const completionDataElement = document.getElementById('<%= LitCompletionClient.ClientID %>');
+            if (completionDataElement) {
+                const completionData = completionDataElement.textContent.split(',').map(Number);
+
+                new Chart(document.getElementById('completionChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Completed All Courses', 'Completed Some Courses'],
+                        datasets: [{
+                            data: completionData,
+                            backgroundColor: ['#FFD700', '#8b0000'],
+                            borderColor: '#1a1a1a',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#fff',
+                                    font: {
+                                        family: 'Poppins'
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const value = context.raw;
+                                        const percentage = Math.round((value / total) * 100);
+                                        return `${context.label}: ${value} (${percentage}%)`;
+                                    }
                                 }
                             }
-                        }
+                        },
+                        cutout: '70%'
                     }
-                }
-            });
+                });
+            } else {
+                console.error('Completion data element not found');
+            }
         };
     </script>
 </asp:Content>
