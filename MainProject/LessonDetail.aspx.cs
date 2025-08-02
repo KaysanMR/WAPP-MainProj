@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Markdig; // Add this namespace for Markdown conversion
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -29,16 +30,36 @@ namespace MainProject
             {
                 con.Open();
 
-                SqlCommand cmd1 = new SqlCommand("SELECT Title, VideoUrl FROM lessonTable WHERE LessonId=@id", con);
-                cmd1.Parameters.AddWithValue("@id", lessonId);
-                SqlDataReader reader1 = cmd1.ExecuteReader();
-                if (reader1.Read())
-                {
-                    lblTitle.Text = reader1["Title"].ToString();
-                    lessonVideo.Attributes["src"] = reader1["VideoUrl"].ToString();
-                }
-                reader1.Close();
+                SqlCommand cmdArticle = new SqlCommand(
+                    "SELECT Title, Content, Author, LastUpdated FROM lessonArticles WHERE LessonId=@id",
+                    con);
+                cmdArticle.Parameters.AddWithValue("@id", lessonId);
+                SqlDataReader articleReader = cmdArticle.ExecuteReader();
 
+                if (articleReader.Read())
+                {
+                    articleSection.Visible = true;
+                    lblArticleTitle.Text = articleReader["Title"].ToString();
+                    lblAuthor.Text = articleReader["Author"].ToString();
+
+                    DateTime updated = Convert.ToDateTime(articleReader["LastUpdated"]);
+                    lblLastUpdated.Text = updated.ToString("MMMM dd, yyyy");
+
+                    string markdownContent = articleReader["Content"].ToString();
+
+                    // Convert markdown to HTML (basic conversion)
+                    var pipeline = new MarkdownPipelineBuilder()
+                        .UseAdvancedExtensions()
+                        .UseSoftlineBreakAsHardlineBreak()
+                        .Build();
+
+                    string htmlContent = Markdig.Markdown.ToHtml(markdownContent, pipeline);
+
+                    articleContent.InnerHtml = htmlContent;
+                }
+                articleReader.Close();
+
+                // Load questions
                 SqlCommand cmd2 = new SqlCommand("SELECT TOP 3 * FROM lessonQuestions WHERE LessonId=@id", con);
                 cmd2.Parameters.AddWithValue("@id", lessonId);
                 SqlDataReader reader2 = cmd2.ExecuteReader();
@@ -226,7 +247,7 @@ namespace MainProject
 
         protected void btnHome_Click(object sender, EventArgs e)
         {
-            Response.Redirect("MainPage.aspx");
+            Response.Redirect("Lessons.aspx");
         }
     }
 }

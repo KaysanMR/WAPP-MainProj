@@ -4,28 +4,15 @@
     margin: 0;
 }
 
-
-.admin-header {
-    background-color: #1a1a1a;
-    border-bottom: 2px solid #FFD700;
-}
-
 .admin-main {
-    padding: 10dvh 20dvw;
+    padding: 0 20dvw 10dvh 20dvw;
 }
 
-/* Admin Navigation */
-.admin-header #navLinks a {
+.admin-header #navLinks {
     color: #fff;
     padding: 10px 15px;
     font-weight: 500;
 }
-
-.admin-header #navLinks a:hover {
-    color: #FFD700;
-    background-color: rgba(255, 215, 0, 0.1);
-}
-
 .admin-header #navLinks li {
     position: relative;
 }

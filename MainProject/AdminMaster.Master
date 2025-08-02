@@ -20,8 +20,6 @@
                     <span class="menu-icon" onclick="toggleMenu()">☰</span>
                     <ul id="navLinks" runat="server">
                         <li><a href="AdminDashboard.aspx">Dashboard</a></li>
-                        <li><a href="ManageUsers.aspx">Users</a></li>
-                        <li><a href="ManageLessons.aspx">Lessons</a></li>
                         <li class="user-icon">
                             <div class="user-initials" id="userInitials" runat="server"></div>
                             <asp:LinkButton ID="btnLogout" runat="server" OnClick="btnLogout_Click">Logout</asp:LinkButton>
